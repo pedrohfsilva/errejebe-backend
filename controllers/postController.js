@@ -11,7 +11,7 @@ const postController = {
 
       const response = await PostModel.create(post)
 
-      res.status(201).json({response, msg: "Post criado com sucesso!"})
+      res.status(201).json({response, msg: "Post criado com sucesso."})
     } catch (error) {
       console.log(error)
     }
@@ -51,7 +51,7 @@ const postController = {
 
       const deletedPost = await PostModel.findByIdAndDelete(id)
 
-      res.status(200).json({deletedPost, msg: "Post excluído com sucesso!"})
+      res.status(200).json({deletedPost, msg: "Post excluído com sucesso."})
     } catch (error) {
       console.log(error)
     }
