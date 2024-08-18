@@ -1,9 +1,9 @@
 const router = require("express").Router()
 
-const commentRouter = require("./comment")
 const postRouter = require("./post")
+const userRouter = require("./user")
 
-router.use("/", commentRouter)
 router.use("/", postRouter)
+router.use("/", userRouter)
 
 module.exports = router

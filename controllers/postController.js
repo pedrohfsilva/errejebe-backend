@@ -64,7 +64,7 @@ const postController = {
       text: req.body.text
     }
 
-    const updatedPost = await PostModel.findByIdAndUpdate(id, post)
+    const updatedPost = await PostModel.findByIdAndUpdate(id, post, { new: true })
 
     if(!updatedPost) {
       res.status(404).json({msg: "Post não encontrado."})
@@ -72,6 +72,53 @@ const postController = {
     }
 
     res.status(200).json({updatedPost, msg: "Post atualizado com sucesso."})
+  },
+  addComment: async(req, res) => {
+    const id = req.params.id
+    const comment = {
+      userId: req.body.userId,
+      text: req.body.text,
+    }
+
+    const updatedPost = await PostModel.findByIdAndUpdate(
+      id,
+      { $push: { comments: comment } },
+      { new: true }
+    );
+
+    if(!updatedPost) {
+      res.status(404).json({msg: "Post não encontrado."})
+      return
+    }
+
+    res.status(200).json({updatedPost, msg: "Comentário adicionado com sucesso."})
+  },
+  toggleLike: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const userId = req.body.userId;
+  
+      const post = await PostModel.findById(id);
+  
+      if (!post) {
+        res.status(404).json({ msg: "Post não encontrado." });
+        return;
+      }
+  
+      const likeIndex = post.likes.indexOf(userId);
+  
+      if (likeIndex !== -1) {
+        post.likes.splice(likeIndex, 1);
+      } else {
+        post.likes.push(userId);
+      }
+
+      const updatedPost = await post.save();
+  
+      res.status(200).json({ updatedPost, msg: "Likes alterado com sucesso." });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   }
 }
 

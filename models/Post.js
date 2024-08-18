@@ -19,8 +19,8 @@ const postSchema = new Schema(
       required: true, // Correção aqui
     },
     likes: {
-      type: Number,
-      default: 0, // Definindo valor padrão
+      type: [String],
+      default: [], // Definindo valor padrão
       required: false, // Correção aqui
     },
     comments: {
