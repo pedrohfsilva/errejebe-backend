@@ -39,6 +39,17 @@ const postController = {
       console.log(error)
     }
   },
+  getPostsByUser: async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const posts = await PostModel.find({ userId: userId });
+
+      res.status(200).json(posts);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: error.message });
+    }
+  },
   delete: async(req, res) => {
     try {
       const id = req.params.id
