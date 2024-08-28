@@ -18,7 +18,7 @@ const postController = {
   },
   getAll: async(req, res) => {
     try {
-      const posts = await PostModel.find()
+      const posts = await PostModel.find().sort({ createdAt: -1 });
       res.json(posts)
     } catch (error) {
       console.log(error)
@@ -42,7 +42,7 @@ const postController = {
   getPostsByUser: async (req, res) => {
     try {
       const userId = req.params.userId;
-      const posts = await PostModel.find({ userId: userId });
+      const posts = await PostModel.find({ userId: userId }).sort({ createdAt: -1 });;
 
       res.status(200).json(posts);
     } catch (error) {

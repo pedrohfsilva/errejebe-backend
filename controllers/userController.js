@@ -18,14 +18,15 @@ const userController = {
       console.log(error)
     }
   },
-  getAll: async(req, res) => {
+  getAll: async (req, res) => {
     try {
-      const users = await UserModel.find()
-      res.json(users)
+      const users = await UserModel.find().sort({ name: 1 });
+      res.json(users);
     } catch (error) {
-      console.log(error)
+      console.log(error);
+      res.status(500).json({ message: 'Erro ao buscar usuários' });
     }
-  },
+  },  
   get: async(req, res) => {
     try {
       const id = req.params.id
