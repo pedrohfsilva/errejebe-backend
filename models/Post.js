@@ -4,8 +4,9 @@ const { Schema } = mongoose;
 
 const postSchema = new Schema(
   {
-    userId: {
-      type: String,
+    user: {
+      type: Schema.Types.ObjectId, 
+      ref: 'User',
       required: true, 
     },
     image: {

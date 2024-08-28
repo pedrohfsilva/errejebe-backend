@@ -4,7 +4,7 @@ const postController = {
   create: async(req, res) => {
     try {
       const post = {
-        userId: req.body.userId,
+        user: req.body.userId,
         image: req.body.image,
         text: req.body.text
       }
@@ -16,18 +16,22 @@ const postController = {
       console.log(error)
     }
   },
-  getAll: async(req, res) => {
+  getAll: async (req, res) => {
     try {
-      const posts = await PostModel.find().sort({ createdAt: -1 });
-      res.json(posts)
+      const posts = await PostModel.find()
+        .sort({ createdAt: -1 })
+        .populate('user', 'name photo positionCompany');
+  
+      res.json(posts);
     } catch (error) {
-      console.log(error)
+      console.log(error);
+      res.status(500).json({ error: 'Erro ao buscar os posts.' });
     }
   },
   get: async(req, res) => {
     try {
       const id = req.params.id
-      const post = await PostModel.findById(id)
+      const post = await PostModel.findById(id).populate('user', 'name photo positionCompany');
 
       if(!post) {
         res.status(404).json({msg: "Post não encontrado."})
@@ -42,7 +46,7 @@ const postController = {
   getPostsByUser: async (req, res) => {
     try {
       const userId = req.params.userId;
-      const posts = await PostModel.find({ userId: userId }).sort({ createdAt: -1 });;
+      const posts = await PostModel.find({ userId: userId }).sort({ createdAt: -1 }).populate('user', 'name photo positionCompany');
 
       res.status(200).json(posts);
     } catch (error) {
@@ -70,7 +74,7 @@ const postController = {
   update: async(req, res) => {
     const id = req.params.id
     const post = {
-      userId: req.body.userId,
+      user: req.body.userId,
       image: req.body.image,
       text: req.body.text
     }
