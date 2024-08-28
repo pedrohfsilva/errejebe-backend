@@ -2,31 +2,24 @@ const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
-const { commentSchema } = require("./Comment.js");
-
 const postSchema = new Schema(
   {
     userId: {
       type: String,
-      required: true, // Correção aqui
+      required: true, 
     },
     image: {
       type: String,
-      required: false, // Correção aqui
+      required: false, 
     },
     text: {
       type: String,
-      required: true, // Correção aqui
+      required: true, 
     },
     likes: {
       type: [String],
-      default: [], // Definindo valor padrão
-      required: false, // Correção aqui
-    },
-    comments: {
-      type: [commentSchema],
-      default: [],
-      required: false, // Correção aqui
+      default: [], 
+      required: false, 
     },
   },
   { timestamps: true }
