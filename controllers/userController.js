@@ -38,32 +38,43 @@ const userController = {
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
-
+  
       // Verifica se o usuário existe
       const user = await UserModel.findOne({ email });
       if (!user) {
         return res.status(404).json({ msg: "Usuário não encontrado." });
       }
-
+  
       // Verifica a senha
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return res.status(400).json({ msg: "Senha incorreta." });
       }
-
+  
       // Cria o token JWT
       const token = jwt.sign(
         { id: user._id, email: user.email },
         process.env.JWT_SECRET,
         { expiresIn: '24h' }
       );
-
-      res.status(200).json({ token, msg: "Login realizado com sucesso." });
+  
+      // Retorna os dados do usuário junto com o token
+      res.status(200).json({
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          positionCompany: user.positionCompany,
+          photo: user.photo,
+        },
+        token,
+        msg: "Login realizado com sucesso."
+      });
     } catch (error) {
       console.log(error);
       res.status(500).json({ msg: "Erro ao realizar login." });
     }
-  },
+  },  
 
   getAll: async (req, res) => {
     try {
