@@ -9,7 +9,7 @@ const postSchema = new Schema(
       ref: 'User',
       required: true, 
     },
-    image: {
+    imageSrc: {
       type: String,
       required: false, 
     },

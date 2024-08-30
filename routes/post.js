@@ -1,8 +1,10 @@
 const router = require("express").Router()
 
+const upload = require("../config/multer")
+
 const postController = require("../controllers/postController")
 
-router.route("/posts").post((req, res) => postController.create(req, res))
+router.route("/posts").post(upload.single("file"), (req, res) => postController.create(req, res));
 router.route("/posts").get((req, res) => postController.getAll(req, res))
 router.route("/posts/:id").get((req, res) => postController.get(req, res))
 router.route("/posts/:id").delete((req, res) => postController.delete(req, res))
