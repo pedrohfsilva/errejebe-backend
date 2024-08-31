@@ -18,7 +18,7 @@ const commentController = {
   },
   getAll: async(req, res) => {
     try {
-      const comments = await PostModel.find().sort({ createdAt: -1 }).populate('user', 'name photo')
+      const comments = await PostModel.find().sort({ createdAt: -1 }).populate('user', 'name imageSrc')
       res.json(comments)
     } catch (error) {
       console.log(error)
@@ -27,7 +27,7 @@ const commentController = {
   get: async(req, res) => {
     try {
       const id = req.params.id
-      const comment = await PostModel.findById(id).populate('user', 'name photo')
+      const comment = await PostModel.findById(id).populate('user', 'name imageSrc')
 
       if(!comment) {
         res.status(404).json({msg: "Comentário não encontrado."})
@@ -42,7 +42,7 @@ const commentController = {
   getCommentsByPost: async (req, res) => {
     try {
       const postId = req.params.postId;
-      const comments = await PostModel.find({ postId: postId }).sort({ createdAt: -1 }).populate('user', 'name photo')
+      const comments = await PostModel.find({ postId: postId }).sort({ createdAt: -1 }).populate('user', 'name imageSrc')
 
       res.status(200).json(comments);
     } catch (error) {
@@ -53,7 +53,7 @@ const commentController = {
   getCommentsByUser: async (req, res) => {
     try {
       const userId = req.params.userId;
-      const comments = await PostModel.find({ userId: userId }).sort({ createdAt: -1 }).populate('user', 'name photo')
+      const comments = await PostModel.find({ userId: userId }).sort({ createdAt: -1 }).populate('user', 'name imageSrc')
 
       res.status(200).json(comments);
     } catch (error) {

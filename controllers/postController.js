@@ -84,7 +84,7 @@ const postController = {
     try {
       const posts = await PostModel.find()
         .sort({ createdAt: -1 })
-        .populate('user', 'name photo positionCompany');
+        .populate('user', 'name positionCompany imageSrc');
 
       res.json(posts);
     } catch (error) {
@@ -96,7 +96,7 @@ const postController = {
   get: async (req, res) => {
     try {
       const id = req.params.id;
-      const post = await PostModel.findById(id).populate('user', 'name photo positionCompany');
+      const post = await PostModel.findById(id).populate('user', 'name positionCompany imageSrc');
 
       if (!post) {
         res.status(404).json({ msg: "Post não encontrado." });
@@ -115,7 +115,7 @@ const postController = {
       const userId = req.params.userId;
       const posts = await PostModel.find({ user: userId })
         .sort({ createdAt: -1 })
-        .populate('user', 'name photo positionCompany');
+        .populate('user', 'name positionCompany imageSrc');
 
       res.status(200).json(posts);
     } catch (error) {

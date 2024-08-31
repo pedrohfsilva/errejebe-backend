@@ -8,7 +8,7 @@ const userSchema = new Schema(
       type: String,
       require: true,
     },
-    photo: {
+    imageSrc: {
       type: String,
       require: false,
     },
