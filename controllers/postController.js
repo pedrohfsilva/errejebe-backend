@@ -1,5 +1,27 @@
 const PostModel = require("../models/Post");
+const NotificationModel = require("../models/Notification");
 const fs = require('fs');
+const fetch = require('node-fetch');
+
+const sendPushNotification = async (expoPushToken, message) => {
+  const response = await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-Encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      to: expoPushToken,
+      sound: 'default',
+      title: 'Nova Interação',
+      body: message,
+    }),
+  });
+
+  const data = await response.json();
+  console.log(data);
+};
 
 const postController = {
   create: async (req, res) => {
@@ -129,7 +151,7 @@ const postController = {
       const id = req.params.id;
       const userId = req.body.userId;
 
-      const post = await PostModel.findById(id);
+      const post = await PostModel.findById(id).populate('user'); // Popula o campo 'user' para acessar o dono do post
 
       if (!post) {
         res.status(404).json({ msg: "Post não encontrado." });
@@ -138,13 +160,32 @@ const postController = {
 
       const likeIndex = post.likes.indexOf(userId);
 
+      let notificationMessage = '';
+
       if (likeIndex !== -1) {
         post.likes.splice(likeIndex, 1);
       } else {
         post.likes.push(userId);
+        notificationMessage = 'curtiu sua publicação!';
       }
 
       const updatedPost = await post.save();
+
+      // Envia a notificação para o dono do post se a ação foi "curtir" e não é o próprio usuário
+      const postOwner = post.user;
+      if (postOwner.expoPushToken && notificationMessage !== '' && postOwner._id.toString() !== userId) {
+        await sendPushNotification(postOwner.expoPushToken, notificationMessage);
+
+        // Cria a notificação no banco de dados
+        const notification = {
+          user: userId, // Usuário que curtiu
+          postId: post._id, // ID do post
+          userId: postOwner._id, // ID do usuário dono do post (quem receberá a notificação)
+          text: notificationMessage,
+        };
+
+        await NotificationModel.create(notification); // Cria a notificação
+      }
 
       res.status(200).json({ updatedPost, msg: "Likes alterado com sucesso." });
     } catch (error) {

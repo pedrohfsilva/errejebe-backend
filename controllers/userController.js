@@ -7,7 +7,7 @@ require('dotenv').config();
 const userController = {
   register: async (req, res) => {
     try {
-      const { name, positionCompany, email, password } = req.body;
+      const { name, positionCompany, email, password, expoPushToken } = req.body;
       const file = req.file; // Recebe o arquivo da imagem, se fornecido
 
       // Verifica se o email já está em uso
@@ -30,6 +30,7 @@ const userController = {
         positionCompany,
         email,
         password: hashedPassword,
+        expoPushToken,
       });
 
       const response = await newUser.save();
@@ -42,7 +43,7 @@ const userController = {
 
   login: async (req, res) => {
     try {
-      const { email, password } = req.body;
+      const { email, password, expoPushToken } = req.body;
   
       // Verifica se o usuário existe
       const user = await UserModel.findOne({ email });
@@ -54,6 +55,12 @@ const userController = {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return res.status(400).json({ msg: "Senha incorreta." });
+      }
+  
+      // Atualiza o expoPushToken do usuário se necessário
+      if (expoPushToken && expoPushToken !== user.expoPushToken) {
+        user.expoPushToken = expoPushToken;
+        await user.save();
       }
   
       // Cria o token JWT
@@ -71,6 +78,7 @@ const userController = {
           email: user.email,
           positionCompany: user.positionCompany,
           imageSrc: user.imageSrc,
+          expoPushToken: user.expoPushToken,
         },
         token,
         msg: "Login realizado com sucesso."
@@ -79,7 +87,7 @@ const userController = {
       console.log(error);
       res.status(500).json({ msg: "Erro ao realizar login." });
     }
-  },  
+  },
 
   getAll: async (req, res) => {
     try {
@@ -135,7 +143,7 @@ const userController = {
   update: async (req, res) => {
     try {
       const id = req.params.id;
-      const { name, positionCompany, email, password } = req.body;
+      const { name, positionCompany, email, password, expoPushToken } = req.body;
       const file = req.file;
 
       const user = await UserModel.findById(id);
@@ -158,9 +166,13 @@ const userController = {
         user.password = await bcrypt.hash(password, salt);
       }
 
+      // Atualiza os outros campos, incluindo o expoPushToken
       user.name = name;
       user.positionCompany = positionCompany;
       user.email = email;
+      if (expoPushToken) {
+        user.expoPushToken = expoPushToken;
+      }
 
       const updatedUser = await user.save();
 
