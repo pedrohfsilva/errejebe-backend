@@ -26,7 +26,7 @@ const userSchema = new Schema(
     },
     expoPushToken: {
       type: String,
-      require: true,
+      require: false,
     }
   },
   { timestamps: true }

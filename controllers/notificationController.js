@@ -28,10 +28,6 @@ const notificationController = {
         .sort({ createdAt: -1 })
         .populate('user', 'name imageSrc'); // Popula os dados do usuário que realizou a ação
 
-      if (!notifications.length) {
-        return res.status(404).json({ msg: "Nenhuma notificação encontrada para este usuário." });
-      }
-
       res.status(200).json(notifications);
     } catch (error) {
       console.log(error);

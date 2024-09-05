@@ -41,7 +41,7 @@ const commentController = {
       const postOwner = post.user;
 
       if (postOwner.expoPushToken && postOwner._id.toString() !== userId) {
-        const notificationMessage = `comentou: ${text}`;
+        const notificationMessage = `${text}`;
         
         await sendPushNotification(postOwner.expoPushToken, notificationMessage);
 
