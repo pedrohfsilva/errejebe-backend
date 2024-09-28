@@ -145,13 +145,29 @@ const userController = {
       const id = req.params.id;
       const { name, positionCompany, email, password, expoPushToken } = req.body;
       const file = req.file;
-
+  
       const user = await UserModel.findById(id);
-
+  
       if (!user) {
         return res.status(404).json({ msg: "Usuário não encontrado." });
       }
-
+  
+      // Atualiza apenas os campos fornecidos
+      if (name) user.name = name;
+      if (positionCompany) user.positionCompany = positionCompany;
+      if (email) user.email = email;
+  
+      // Atualiza a senha se fornecida
+      if (password) {
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+      }
+  
+      // Atualiza o expoPushToken se fornecido
+      if (expoPushToken) {
+        user.expoPushToken = expoPushToken;
+      }
+  
       // Se uma nova imagem for enviada, remove a antiga e atualiza com a nova
       if (file) {
         if (user.imageSrc) {
@@ -159,29 +175,15 @@ const userController = {
         }
         user.imageSrc = file.path;
       }
-
-      // Atualiza a senha, se fornecida
-      if (password) {
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(password, salt);
-      }
-
-      // Atualiza os outros campos, incluindo o expoPushToken
-      user.name = name;
-      user.positionCompany = positionCompany;
-      user.email = email;
-      if (expoPushToken) {
-        user.expoPushToken = expoPushToken;
-      }
-
+  
       const updatedUser = await user.save();
-
+  
       res.status(200).json({ updatedUser, msg: "Usuário atualizado com sucesso." });
     } catch (error) {
       console.log(error);
       res.status(500).json({ msg: "Erro ao atualizar usuário." });
     }
-  },
+  },  
 };
 
 module.exports = userController;

@@ -14,8 +14,8 @@ const sendPushNotification = async (expoPushToken, message) => {
     body: JSON.stringify({
       to: expoPushToken,
       sound: 'default',
-      title: 'Nova Interação',
-      body: message,
+      title: 'Nova curtida',
+      body: 'Alguém curtiu sua publicação',
     }),
   });
 
@@ -166,13 +166,14 @@ const postController = {
         post.likes.splice(likeIndex, 1);
       } else {
         post.likes.push(userId);
-        notificationMessage = 'curtiu sua publicação!';
+        notificationMessage = 'curtiu sua publicação';
       }
 
       const updatedPost = await post.save();
 
       // Envia a notificação para o dono do post se a ação foi "curtir" e não é o próprio usuário
       const postOwner = post.user;
+
       if (postOwner.expoPushToken && notificationMessage !== '' && postOwner._id.toString() !== userId) {
         await sendPushNotification(postOwner.expoPushToken, notificationMessage);
 

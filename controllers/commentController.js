@@ -14,13 +14,12 @@ const sendPushNotification = async (expoPushToken, message) => {
     body: JSON.stringify({
       to: expoPushToken,
       sound: 'default',
-      title: 'Nova Interação',
-      body: message,
+      title: 'Novo comentário',
+      body: `Alguém ${message}`,
     }),
   });
 
   const data = await response.json();
-  console.log(data);
 };
 
 const commentController = {
@@ -41,7 +40,7 @@ const commentController = {
       const postOwner = post.user;
 
       if (postOwner.expoPushToken && postOwner._id.toString() !== userId) {
-        const notificationMessage = `${text}`;
+        const notificationMessage = `comentou "${text}"`;
         
         await sendPushNotification(postOwner.expoPushToken, notificationMessage);
 
